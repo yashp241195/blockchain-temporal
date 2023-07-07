@@ -1,7 +1,7 @@
 const express = require('express');
 const { Mutex } = require('async-mutex');
 const { getRandomString, getHash, validateData } = require('../commonfn')
-const { db1, redisClient } = require('../db')
+const { db2, redisClient } = require('../db')
 const mongoose = require('mongoose');
 
 const app = express();
@@ -14,7 +14,7 @@ const BlockSchema = new mongoose.Schema({
   data: { type: Object, strict: false, }, previousHash: String, hash: String
 });
 
-const Block = db1.model(withNS('block'), BlockSchema);
+const Block = db2.model(withNS('block'), BlockSchema);
 const mutex = new Mutex();
 
 app.set('view engine', 'ejs');
