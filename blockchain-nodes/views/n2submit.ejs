@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>blockchain.rawopinion.in</title>
+</head>
+<body>
+  <h2>Blockchain <%= hostname %></h2>
+  <form id="myForm1">
+    <button type="submit">Start Blockchain</button>
+  </form>
+  <div id="result1"></div>
+  <br />
+  <div style="display: flex;">
+    <div style="padding: 5px;">
+      <form id="myForm2">
+        <label>Enter userHash:</label>
+        <br/>
+        <input type="text" id="inputData2a" name="inputData2a">
+        <br/>
+        <label>Add Lambda Contract:</label>
+        <br/>
+        <textarea id="inputData2b" name="inputData2b" rows="4"></textarea>
+        <br/><br/>
+        <div id="result2"></div>
+        <button type="submit">Add Contract</button>
+      </form>
+    </div>
+    <div style="padding: 5px;">
+      <form id="myForm3">
+        <label>Enter userHash:</label>
+        <br/>
+        <input type="text" id="inputData3a" name="inputData3a">
+        <br/>
+        <label>Add Blockchain Data:</label>
+        <br/>
+        <textarea id="inputData3b" name="inputData3b" rows="4"></textarea>
+        <br/><br/>
+        <div id="result3"></div>
+        <button type="submit">Add Block</button>
+      </form>
+    </div>
+  </div>
+  <br />
+  <form id="myForm4">
+    <br/> <label>Enter blockHash:</label>
+    <br/> <input type="text" id="inputData4" name="inputData4">
+    <button type="submit">Get Block Data</button>
+  </form>
+  <div id="result4"></div>
+  <form id="myForm5">
+    <br/> <button type="submit">Get Full Blockchain</button>
+  </form>
+  <div id="result5"></div>
+  <form id="myForm6">
+    <br/> <label>Enter main Node IP Addresses:</label>
+    <br/> <input type="text" id="inputData6" name="inputData6">
+    <button type="submit">Deploy</button>
+  </form>
+  <div id="result6"></div>
+  <script>
+
+    document.getElementById("myForm1").addEventListener("submit", function(event) {
+      event.preventDefault();
+      fetch("https://blockchain.rawopinion.in/start").then(response => response.json())
+      .then(data => { document.getElementById("result1").innerHTML = "Server response: <pre>" + JSON.stringify(data,null,1); +"</pre>" })
+      .catch(error => { document.getElementById("result1").textContent = "Error occurred. Please check the console."; });
+    });
+
+    document.getElementById("myForm2").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const inputData2a = document.getElementById("inputData2a").value;
+      const inputData2b = document.getElementById("inputData2b").value;
+
+      fetch("https://blockchain.rawopinion.in/add/contract",{
+        headers: { 'Content-Type': 'application/json'}, method: "POST", 
+        body: JSON.stringify({ userHashInput:inputData2a, data:inputData2b })
+      }).then(response => response.json())
+      .then(data => { document.getElementById("result2").innerHTML = "Server response: <pre>" + JSON.stringify(data,null,1); +"</pre>" })
+      .catch(error => {  document.getElementById("result2").textContent = "Error occurred. Please check the console."; });
+    });
+
+    document.getElementById("myForm3").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const inputData3a = document.getElementById("inputData3a").value;
+      const inputData3b = document.getElementById("inputData3b").value;
+
+      fetch("https://blockchain.rawopinion.in/add/data",{
+        headers: { 'Content-Type': 'application/json'}, method: "POST", 
+        body: JSON.stringify({ userHashInput:inputData3a, "data":inputData3b })
+      }).then(response => response.json())
+      .then(data => { document.getElementById("result3").innerHTML = "Server response: <pre>" + JSON.stringify(data,null,1); +"</pre>" })
+      .catch(error => { document.getElementById("result3").textContent = "Error occurred. Please check the console."; });
+    });
+
+    document.getElementById("myForm4").addEventListener("submit", function(event) {
+      event.preventDefault();
+      let inputData = document.getElementById("inputData4").value;
+      fetch(`https://blockchain.rawopinion.in/block/${inputData}`).then(response => response.json())
+      .then(data => { document.getElementById("result4").innerHTML = "Server response: <pre>" + JSON.stringify(data,null,1); +"</pre>" })
+      .catch(error => { document.getElementById("result4").textContent = "Error occurred. Please check the console."; });
+    });
+
+    document.getElementById("myForm5").addEventListener("submit", function(event) {
+      event.preventDefault();
+      fetch(`https://blockchain.rawopinion.in/blockchain`).then(response => response.json())
+      .then(data => { document.getElementById("result5").innerHTML = "Server response: <pre>" + JSON.stringify(data,null,1); +"</pre>" })
+      .catch(error => { document.getElementById("result5").textContent = "Error occurred. Please check the console."; });
+    });
+
+    document.getElementById("myForm6").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const inputData6 = document.getElementById('inputData6').value;
+
+      fetch("https://blockchain.rawopinion.in/deploy",{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ inputData6 })
+      }).then(response => response.json())
+      .then(data => { document.getElementById("result6").innerHTML = "Server response: <pre>" + JSON.stringify(data,null,1); +"</pre>" })
+      .catch(error => { document.getElementById("result6").textContent = "Error occurred. Please check the console."; });
+    });
+
+  </script>
+</body>
+</html>
