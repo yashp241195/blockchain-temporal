@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blockchain Dashboard</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      color: #333;
+      padding: 20px;
+    }
+    h2 {
+      color: #444;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .form-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    .btn-custom {
+      background-color: #6c757d;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+    }
+    .btn-custom:hover {
+      background-color: #5a6268;
+    }
+    .response {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      overflow-x: auto;
+      color: #006400;
+    }
+    .form-label {
+      margin-bottom: .5rem;
+      font-weight: bold;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    .form-group input, .form-group textarea {
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      padding: 10px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: #6c757d;
+      box-shadow: 0 0 8px rgba(108, 117, 125, 0.2);
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>Blockchain Dashboard : Workoso</h2>
+
+  <div class="container">
+    <!-- Start Blockchain Form -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <form id="startBlockchainForm" class="form-container">
+          <button type="submit" class="btn btn-custom"><i class="fas fa-play"></i> Start Blockchain</button>
+          <div id="startBlockchainResult" class="response mt-2"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add Contract and Add Block Forms -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <form id="addContractForm" class="form-container">
+          <h4 class="mb-3">Add Lambda Contract</h4>
+          <div class="form-group">
+            <label for="contractUserHash" class="form-label">Enter User Hash:</label>
+            <input type="text" id="contractUserHash" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="contractData" class="form-label">Add Lambda Contract:</label>
+            <textarea id="contractData" class="form-control" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-custom"><i class="fas fa-plus"></i> Add Contract</button>
+          <div id="addContractResult" class="response mt-2"></div>
+        </form>
+      </div>
+
+      <div class="col-md-6">
+        <form id="addBlockForm" class="form-container">
+          <h4 class="mb-3">Add Blockchain Data</h4>
+          <div class="form-group">
+            <label for="blockUserHash" class="form-label">Enter User Hash:</label>
+            <input type="text" id="blockUserHash" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="blockData" class="form-label">Add Blockchain Data:</label>
+            <textarea id="blockData" class="form-control" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-custom"><i class="fas fa-cube"></i> Add Block</button>
+          <div id="addBlockResult" class="response mt-2"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Get Block Form -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <form id="getBlockForm" class="form-container">
+          <h4 class="mb-3">Get Block Data</h4>
+          <div class="form-group">
+            <label for="blockHash" class="form-label">Enter Block Hash:</label>
+            <input type="text" id="blockHash" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-custom"><i class="fas fa-search"></i> Get Block Data</button>
+          <div id="getBlockResult" class="response mt-2"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Get Blockchain Form -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <form id="getBlockchainForm" class="form-container">
+          <h4 class="mb-3">Get Full Blockchain</h4>
+          <button type="submit" class="btn btn-custom"><i class="fas fa-stream"></i> Get Full Blockchain</button>
+          <div id="getBlockchainResult" class="response mt-2"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // const BASE_URL = 'http://localhost:3000/workoso';
+    const BASE_URL = 'https://blockchain.csoc.in/workoso';
+
+    function handleFormSubmit(url, resultId, method = 'GET', getData) {
+      return function(event) {
+          event.preventDefault();
+          const data = getData ? getData() : {};
+          let urlFn = '';
+          if (typeof url === 'function') { urlFn = url();} 
+          else { urlFn = url; }
+
+          $.ajax({
+              url: urlFn,
+              method: method,
+              contentType: 'application/json',
+              data: method === 'POST' ? JSON.stringify(data) : null,
+              success: (response) => {
+                  $(resultId).html(`<pre>${JSON.stringify(response, null, 2)}</pre>`);
+              },
+              error: (xhr) => {
+                  $(resultId).html(`<pre>Error: - ${JSON.stringify(xhr.responseJSON.error, null, 2)}</pre>`);
+              }
+          });
+      };
+    }
+
+    $('#startBlockchainForm').on('submit', handleFormSubmit(`${BASE_URL}/start`, '#startBlockchainResult'));
+    
+    $('#addContractForm').on('submit', handleFormSubmit(`${BASE_URL}/add/contract`, '#addContractResult', 'POST', () => ({
+      userHashInput: $('#contractUserHash').val(),
+      data: $('#contractData').val()
+    })));
+
+    $('#addBlockForm').on('submit', handleFormSubmit(`${BASE_URL}/add/data`, '#addBlockResult', 'POST', () => ({
+      userHashInput: $('#blockUserHash').val(),
+      data: $('#blockData').val()
+    })));
+
+    $('#getBlockForm').on('submit', handleFormSubmit(() => `${BASE_URL}/block/${$('#blockHash').val()}`, '#getBlockResult'));
+    
+    $('#getBlockchainForm').on('submit', handleFormSubmit(`${BASE_URL}/blockchain`, '#getBlockchainResult'));
+
+  </script>
+</body>
+</html>
